@@ -21,7 +21,7 @@ function changeActiveTool(event) {
 function enableSelector(event) {
   event.preventDefault();
   changeActiveTool(event);
-  pdf.enableSelector();
+//cb  pdf.enableSelector();
 }
 
 function enablePencil(event) {
@@ -46,7 +46,7 @@ function enableAddArrow(event) {
 
 function addImage(event) {
   event.preventDefault();
-  pdf.addImageToCanvas();
+//cb  pdf.addImageToCanvas();
 }
 
 function enableRectangle(event) {
@@ -54,7 +54,7 @@ function enableRectangle(event) {
   changeActiveTool(event);
   pdf.setColor('rgba(255, 0, 0, 0.3)');
   pdf.setBorderColor('blue');
-  pdf.enableRectangle();
+//cb  pdf.enableRectangle();
 }
 
 function deleteSelectedObject(event) {
