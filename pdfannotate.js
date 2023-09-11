@@ -70,76 +70,90 @@ var PDFAnnotate = function (container_id, url, options = {}) {
     }
   );
 
-  this.initFabric = function () {
-    var inst = this;
-    let canvases = $('#' + inst.container_id + ' canvas');
-    canvases.each(function (index, el) {
-      var background = el.toDataURL('image/png');
-      var fabricObj = new fabric.Canvas(el.id, {
-        freeDrawingBrush: {
-          width: 1,
-          color: inst.color,
-        },
-      });
-      inst.fabricObjects.push(fabricObj);
-      if (typeof options.onPageUpdated == 'function') {
-        fabricObj.on('object:added', function () {
-          var oldValue = Object.assign({}, inst.fabricObjectsData[index]);
-          inst.fabricObjectsData[index] = fabricObj.toJSON();
-          options.onPageUpdated(
-            index + 1,
-            oldValue,
-            inst.fabricObjectsData[index]
-          );
-        });
-      }
-      fabricObj.setBackgroundImage(
-        background,
-        fabricObj.renderAll.bind(fabricObj)
-      );
-      $(fabricObj.upperCanvasEl).click(function (event) {
-        inst.active_canvas = index;
-        inst.fabricClickHandler(event, fabricObj);
-      });
-      fabricObj.on('after:render', function () {
-        inst.fabricObjectsData[index] = fabricObj.toJSON();
-        fabricObj.off('after:render');
-      });
-
-      if (index === canvases.length - 1 && typeof options.ready === 'function') {
-        options.ready();
-      }
+ this.initFabric = function () {
+  var inst = this;
+  let canvases = $('#' + inst.container_id + ' canvas');
+  canvases.each(function (index, el) {
+    var background = el.toDataURL('image/png');
+    var fabricObj = new fabric.Canvas(el.id, {
+      freeDrawingBrush: {
+        width: 1,
+        color: inst.color,
+      },
     });
-  };
-
-  this.fabricClickHandler = function (event, fabricObj) {
-    var inst = this;
-    var toolObj;
-    if (inst.active_tool == 2) {
-      toolObj = new fabric.IText(inst.textBoxText, {
-        left: event.clientX - fabricObj.upperCanvasEl.getBoundingClientRect().left,
-        top: event.clientY - fabricObj.upperCanvasEl.getBoundingClientRect().top,
-        fill: inst.color,
-        fontSize: inst.font_size,
-        selectable: true,
-      });
-    } else if (inst.active_tool == 4) {
-      toolObj = new fabric.Rect({
-        left: event.clientX - fabricObj.upperCanvasEl.getBoundingClientRect().left,
-        top: event.clientY - fabricObj.upperCanvasEl.getBoundingClientRect().top,
-        width: 100,
-        height: 100,
-        fill: inst.color,
-        stroke: inst.borderColor,
-        strokeSize: inst.borderSize,
+    inst.fabricObjects.push(fabricObj);
+    if (typeof options.onPageUpdated == 'function') {
+      fabricObj.on('object:added', function () {
+        var oldValue = Object.assign({}, inst.fabricObjectsData[index]);
+        inst.fabricObjectsData[index] = fabricObj.toJSON();
+        options.onPageUpdated(
+          index + 1,
+          oldValue,
+          inst.fabricObjectsData[index]
+        );
       });
     }
+    fabricObj.setBackgroundImage(
+      background,
+      fabricObj.renderAll.bind(fabricObj)
+    );
 
-    if (toolObj) {
-      fabricObj.add(toolObj);
+    // Add event listeners for both mouse and touch events
+    $(fabricObj.upperCanvasEl).on('click touchstart', function (event) {
+      // Detect whether the event is a touch event or a mouse click event
+      const isTouch = event.type === 'touchstart';
+
+      inst.active_canvas = index;
+      inst.fabricClickHandler(event, fabricObj, isTouch);
+    });
+
+    fabricObj.on('after:render', function () {
+      inst.fabricObjectsData[index] = fabricObj.toJSON();
+      fabricObj.off('after:render');
+    });
+
+    if (index === canvases.length - 1 && typeof options.ready === 'function') {
+      options.ready();
     }
-  };
+  });
 };
+
+this.fabricClickHandler = function (event, fabricObj, isTouch) {
+  var inst = this;
+  var toolObj;
+  if (inst.active_tool == 2) {
+    // Calculate event coordinates based on the event type (mouse or touch)
+    const clientX = isTouch ? event.touches[0].clientX : event.clientX;
+    const clientY = isTouch ? event.touches[0].clientY : event.clientY;
+
+    toolObj = new fabric.IText(inst.textBoxText, {
+      left: clientX - fabricObj.upperCanvasEl.getBoundingClientRect().left,
+      top: clientY - fabricObj.upperCanvasEl.getBoundingClientRect().top,
+      fill: inst.color,
+      fontSize: inst.font_size,
+      selectable: true,
+    });
+  } else if (inst.active_tool == 4) {
+    // Calculate event coordinates based on the event type (mouse or touch)
+    const clientX = isTouch ? event.touches[0].clientX : event.clientX;
+    const clientY = isTouch ? event.touches[0].clientY : event.clientY;
+
+    toolObj = new fabric.Rect({
+      left: clientX - fabricObj.upperCanvasEl.getBoundingClientRect().left,
+      top: clientY - fabricObj.upperCanvasEl.getBoundingClientRect().top,
+      width: 100,
+      height: 100,
+      fill: inst.color,
+      stroke: inst.borderColor,
+      strokeSize: inst.borderSize,
+    });
+  }
+
+  if (toolObj) {
+    fabricObj.add(toolObj);
+  }
+};
+
 
 PDFAnnotate.prototype.enableSelector = function () {
   var inst = this;
