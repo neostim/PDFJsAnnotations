@@ -1,4 +1,4 @@
-var pdf = new PDFAnnotate('pdf-container', 'sample.pdf', {
+var pdf = new PDFAnnotate('pdf-container', 'SMR86.pdf.pdf', {
   onPageUpdated(page, oldData, newData) {
     console.log(page, oldData, newData);
   },
