@@ -77,11 +77,14 @@ var PDFAnnotate = function (container_id, url, options = {}) {
   canvases.each(function (index, el) {
     var background = el.toDataURL('image/png');
     var fabricObj = new fabric.Canvas(el.id, {
+      selection : false,
+      controlsAboveOverlay:true,
+      centeredScaling:true,
+      allowTouchScrolling: true,
       freeDrawingBrush: {
         width: 1,
         color: inst.color,
-      },
-      allowTouchScrolling: true,
+      }
     });
     inst.fabricObjects.push(fabricObj);
     if (typeof options.onPageUpdated == 'function') {
