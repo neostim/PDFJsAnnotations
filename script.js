@@ -6,7 +6,7 @@ var pdf = new PDFAnnotate('pdf-container', 'SMR86.pdf', {
     console.log('Plugin initialized successfully');
     pdf.loadFromJSON(sampleOutput);
   },
-  scale: 1.0,
+  scale: 1.5,
   pageImageCompression: 'MEDIUM', // FAST, MEDIUM, SLOW(Helps to control the new PDF file size)
 });
 
