@@ -81,6 +81,7 @@ var PDFAnnotate = function (container_id, url, options = {}) {
         width: 1,
         color: inst.color,
       },
+      allowTouchScrolling: true,
     });
     inst.fabricObjects.push(fabricObj);
     if (typeof options.onPageUpdated == 'function') {
