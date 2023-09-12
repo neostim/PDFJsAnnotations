@@ -48,6 +48,7 @@ var PDFAnnotate = function (container_id, url, options = {}) {
           canvas.className = 'pdf-canvas';
           canvas.height = viewport.height;
           canvas.width = viewport.width;
+          canvas.allowTouchScrolling: true;
           context = canvas.getContext('2d');
 
           var renderContext = {
